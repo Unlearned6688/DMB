@@ -52,7 +52,7 @@ def ensure_run_directory():
         if not os.path.exists(run_dir):
             os.makedirs(run_dir)
             logger.debug(f"Created directory {run_dir}.")
-        subprocess.run(["chown", "-R", "DMB:DMB", run_dir], check=True)
+        subprocess.run(["chown", "-R", f"{user_id}:{group_id}", run_dir], check=True)
         subprocess.run(["chmod", "775", run_dir], check=True)
         logger.debug(f"Set ownership and permissions for {run_dir}.")
     except Exception as e:
@@ -139,7 +139,7 @@ def postgres_setup():
         else:
             logger.info(f"PostgreSQL data directory exists at {postgres_data}.")
 
-        subprocess.run(["chown", "-R", f"{postgres_system_user}:{postgres_system_user}", postgres_data], check=True)
+        subprocess.run(["chown", "-R", f"{user_id}:{group_id}", postgres_data], check=True)
         subprocess.run(["chmod", "-R", "700", postgres_data], check=True)
         logger.info(f"Changed ownership and set permissions of {postgres_data}.")
 
