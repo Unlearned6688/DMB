@@ -59,7 +59,7 @@ def ensure_run_directory():
         logger.error(f"Error setting up /run/postgresql directory: {e}")
         raise
 
-def initialize_postgres_data_directory(postgres_data, postgres_system_user="DMB"):
+def initialize_postgres_data_directory(postgres_data, postgres_user="DMB"):
     try:
         postmaster_pid = os.path.join(postgres_data, 'postmaster.pid')
         if os.path.exists(postmaster_pid):
@@ -68,7 +68,7 @@ def initialize_postgres_data_directory(postgres_data, postgres_system_user="DMB"
         else:
             logger.info(f"Initializing PostgreSQL data directory at {postgres_data}...")
             initialize_command = f"initdb -D {postgres_data} -U {postgres_user} --pwfile=<(echo {postgres_password})"
-            init = process_handler.start_process("PostgreSQL_init", postgres_data, ["su", postgres_system_user, "-s", "/bin/sh", "-c", initialize_command])
+            init = process_handler.start_process("PostgreSQL_init", postgres_data, ["su", postgres_user, "-s", "/bin/sh", "-c", initialize_command])
             init.wait()
             logger.info(f"Initialized PostgreSQL data directory at {postgres_data}.")
     except subprocess.CalledProcessError as e:
@@ -143,7 +143,7 @@ def postgres_setup():
         subprocess.run(["chmod", "-R", "700", postgres_data], check=True)
         logger.info(f"Changed ownership and set permissions of {postgres_data}.")
 
-        initialize_postgres_data_directory(postgres_data, postgres_system_user="DMB")
+        initialize_postgres_data_directory(postgres_data, postgres_user="DMB")
 
         ensure_run_directory()
 
